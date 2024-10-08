@@ -1,14 +1,13 @@
 import React from 'react';
 import { View } from 'react-native';
-import './App.css';
-import HomePage from './src/Pages/Homepage';
+import Navbar from './src/components/Navbar';
 
-function App() {
+export default function App() {
   return (
     <View style={{ flex: 1 }}>
-      <HomePage />
+      <Navbar />
     </View>
   );
 }
 
-export default App;
+
