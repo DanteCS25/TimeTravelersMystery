@@ -3,13 +3,14 @@ import { View, TextInput, TouchableOpacity, Text, StyleSheet } from "react-nativ
 import { handleSignup } from "../../server"; // Import the handleSignup function
 
 function Signup({ navigation }) {
+  const [name, setName] = useState(""); // New state for name
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
   const handleSignUp = async () => {
     try {
-      await handleSignup(email, password); // Call the server function
+      await handleSignup(name, email, password); // Pass name to the server function
       navigation.navigate('HomePage'); // Navigate to HomePage after signup
     } catch (error) {
       setError(error.message);
@@ -19,6 +20,12 @@ function Signup({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Name" // Placeholder for name input
+        value={name}
+        onChangeText={(text) => setName(text)}
+      />
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -36,7 +43,7 @@ function Signup({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {error && <Text style={styles.errorText}>{error}</Text>} {/* Ensure this is wrapped in <Text> */}
     </View>
   );
 }

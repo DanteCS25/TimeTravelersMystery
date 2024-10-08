@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomePage from '../Pages/Homepage';
 import LoginSignup from '../Pages/LoginSignup';
+import LogoutScreen from '../Pages/Logout';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth, db } from '../../Firebase'; // Ensure the correct path to Firebase.js
-import { collection, getDocs } from 'firebase/firestore'; // Import Firestore functions
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '../../Firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import Signup from '../Pages/Signup';
+import Profile from '../Pages/Profile';
+import Puzzle from '../Pages/Puzzle';
+import Time from '../Pages/Time';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,22 +32,11 @@ const Navbar = () => {
       }
     });
 
-    // Test Firestore connection when the component mounts
     testFirestoreConnection();
 
     return unsubscribe;
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      console.log('User logged out');
-    } catch (error) {
-      console.error('Logout error:', error.message);
-    }
-  };
-
-  // Function to test Firestore connection
   const testFirestoreConnection = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "users"));
@@ -58,47 +51,65 @@ const Navbar = () => {
   function Navigation() {
     return (
       <Tab.Navigator
-        initialRouteName="HomePage"
+        initialRouteName="Homepage"
         screenOptions={({ route }) => ({
+          tabBarButton: (props) => <CustomTabBarButton {...props} routeName={route.name} />,
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
-            if (route.name === 'Homepage') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Logout') {
-              iconName = 'logout';
+            switch (route.name) {
+              case 'Homepage':
+                iconName = focused ? 'home' : 'home-outline';
+                break;
+              case 'Profile':
+                iconName = focused ? 'account' : 'account-outline';
+                break;
+              case 'Puzzle':
+                iconName = focused ? 'puzzle' : 'puzzle-outline';
+                break;
+              case 'Time':
+                iconName = focused ? 'clock' : 'clock-outline';
+                break;
+              case 'Logout':
+                iconName = 'logout';
+                break;
+              default:
+                iconName = 'help-circle';
+                break;
             }
-            return <Icon name={iconName} size={size} color={color} />;
+            return <Icon name={iconName} size={24} color={color} />; 
           },
-          tabBarActiveTintColor: '#000',
-          tabBarInactiveTintColor: '#fff',
+          tabBarActiveTintColor: '#fff',
+          tabBarInactiveTintColor: '#D2B48C', 
           tabBarStyle: styles.tabBar,
-          tabBarLabelStyle: styles.tabBarLabel,
+          tabBarBackground: () => <View style={styles.transparentBackground} />, 
+          tabBarShowLabel: false,
+          headerShown: false,
         })}
       >
         <Tab.Screen
           name="Homepage"
           component={HomePage}
-          options={{
-            headerShown: false,
-          }}
+          options={{ headerShown: false }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={Profile}
+          options={{ headerShown: false }}
+        />
+        <Tab.Screen
+          name="Puzzle"
+          component={Puzzle}
+          options={{ headerShown: false }}
+        />
+        <Tab.Screen
+          name="Time"
+          component={Time}
+          options={{ headerShown: false }}
         />
         <Tab.Screen
           name="Logout"
-          component={() => (
-            <View style={styles.logoutContainer}>
-              <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                <Text style={styles.logoutText}>Logout</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          options={{
-            tabBarButton: (props) => (
-              <TouchableOpacity {...props} onPress={handleLogout}>
-                <Text style={styles.logoutText}>Logout</Text>
-              </TouchableOpacity>
-            ),
-            headerShown: false,
-          }}
+          component={LogoutScreen}
+          options={{ headerShown: false }}
         />
       </Tab.Navigator>
     );
@@ -111,9 +122,7 @@ const Navbar = () => {
           <Stack.Screen
             name="HomePage"
             component={Navigation}
-            options={{
-              headerShown: false,
-            }}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       ) : (
@@ -121,16 +130,12 @@ const Navbar = () => {
           <Stack.Screen
             name="LoginSignup"
             component={LoginSignup}
-            options={{
-              headerShown: false,
-            }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Signup"
             component={Signup}
-            options={{
-              headerShown: false,
-            }}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       )}
@@ -138,27 +143,77 @@ const Navbar = () => {
   );
 };
 
+const CustomTabBarButton = ({ children, onPress, accessibilityState }) => {
+  const focused = accessibilityState.selected;
+  const translateYValue = new Animated.Value(focused ? -10 : 0);
+
+  useEffect(() => {
+    Animated.spring(translateYValue, {
+      toValue: focused ? -10 : 0, 
+      friction: 3,
+      useNativeDriver: true,
+    }).start();
+  }, [focused]);
+
+  return (
+    <TouchableOpacity
+      style={[styles.tabButton]}
+      onPress={onPress}
+    >
+      <Animated.View
+        style={[
+          focused ? styles.focusedIconContainer : styles.defaultIconContainer,
+          { transform: [{ translateY: translateYValue }] },
+        ]}
+      >
+        {children}
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#333',
-  },
-  tabBarLabel: {
-    fontSize: 12,
-    marginBottom: 4,
-  },
-  logoutContainer: {
-    flex: 1,
+    backgroundColor: 'rgba(95, 75, 50, 0.9)', 
+    height: 70,
+    borderTopWidth: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    elevation: 5,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
-  logoutButton: {
-    backgroundColor: '#ff4d4d',
-    padding: 15,
-    borderRadius: 5,
+  transparentBackground: {
+    flex: 1,
+    backgroundColor: 'transparent', 
   },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
+  tabButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  focusedIconContainer: {
+    backgroundColor: '#D2B48C', 
+    width: 60, 
+    height: 60,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 10,
+  },
+  defaultIconContainer: {
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

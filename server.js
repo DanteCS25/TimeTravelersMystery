@@ -14,7 +14,7 @@ export const handleLogin = (email, password) => {
     });
 };
 
-export const handleSignup = async (email, password) => {
+export const handleSignup = async (name, email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -22,6 +22,7 @@ export const handleSignup = async (email, password) => {
 
     // Save user to Firestore
     await setDoc(doc(db, "users", user.uid), {
+      name: name, // Save the user's name
       email: user.email,
       createdAt: new Date(),
     });

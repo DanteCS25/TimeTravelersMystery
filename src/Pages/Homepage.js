@@ -1,14 +1,44 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Navbar from '../components/Navbar';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { auth, db } from '../../Firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
-function HomePage ({navigation}) {
+const Profile = ({ navigation }) => {
+  const user = auth.currentUser;
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      // Fetch user data from the database
+      const fetchUserData = async () => {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.id)); 
+          if (userDoc.exists()) {
+            setUserName(userDoc.data().name);
+          } else {
+            console.log("No such document!");
+          }
+        } catch (error) {
+          console.error("Error fetching user data: ", error);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [user]);
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Welcome to Time Traveler's Mystery</Text>
-        <Text style={styles.subtitle}>Embark on an adventure through time and uncover hidden secrets in history!</Text>
-      </View>
+      <Text style={styles.title}>Profile</Text>
+      {user ? (
+        <>
+          <Text style={styles.text}>Name: {userName || "Anonymous"}</Text>
+          <Text style={styles.text}>Email: {user.email}</Text>
+          <Button title="Edit Profile" onPress={() => navigation.navigate('EditProfile')} />
+        </>
+      ) : (
+        <Text style={styles.text}>No user data available. Please log in.</Text>
+      )}
     </View>
   );
 };
@@ -18,24 +48,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
-  },
-  header: {
-    marginTop: 50,
-    alignItems: 'center',
+    backgroundColor: '#F5F5DC',
+    padding: 20,
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#4A403A',
+    marginBottom: 20,
+    fontFamily: 'serif',
   },
-  subtitle: {
-    fontSize: 18,
-    color: 'white',
-    marginTop: 10,
+  text: {
+    fontSize: 16,
+    color: '#333',
+    fontFamily: 'serif',
     textAlign: 'center',
-    paddingHorizontal: 20,
+    marginBottom: 10,
   },
 });
 
-export default HomePage;
+export default Profile;
