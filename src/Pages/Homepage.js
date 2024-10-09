@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { auth, db } from '../../Firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
-const Profile = ({ navigation }) => {
+const Homepage = ({ navigation }) => {
   const user = auth.currentUser;
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    if (user) {
-      // Fetch user data from the database
-      const fetchUserData = async () => {
+    const fetchUserData = async () => {
+      if (user) {
         try {
-          const userDoc = await getDoc(doc(db, 'users', user.id)); 
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
             setUserName(userDoc.data().name);
           } else {
@@ -21,24 +21,21 @@ const Profile = ({ navigation }) => {
         } catch (error) {
           console.error("Error fetching user data: ", error);
         }
-      };
+      }
+    };
 
-      fetchUserData();
-    }
+    fetchUserData();
   }, [user]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
-      {user ? (
-        <>
-          <Text style={styles.text}>Name: {userName || "Anonymous"}</Text>
-          <Text style={styles.text}>Email: {user.email}</Text>
-          <Button title="Edit Profile" onPress={() => navigation.navigate('EditProfile')} />
-        </>
-      ) : (
-        <Text style={styles.text}>No user data available. Please log in.</Text>
-      )}
+      <View style={styles.header}>
+      <Text style={styles.userName}>{userName ? `Welcome Piece, ${userName}` : "Guest"}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <Icon name="account" size={30} color="#4A403A" />
+        </TouchableOpacity>
+      </View>
+      {/* Other homepage content goes here */}
     </View>
   );
 };
@@ -46,25 +43,24 @@ const Profile = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#F5F5DC',
-    padding: 20,
+    padding: 30,
+    paddingTop: 50,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  header: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+  },
+  userName: {
+    fontSize: 18,
     color: '#4A403A',
-    marginBottom: 20,
     fontFamily: 'serif',
-  },
-  text: {
-    fontSize: 16,
-    color: '#333',
-    fontFamily: 'serif',
-    textAlign: 'center',
-    marginBottom: 10,
   },
 });
 
-export default Profile;
+export default Homepage;

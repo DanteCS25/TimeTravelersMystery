@@ -12,7 +12,9 @@ const Profile = ({ navigation }) => {
       // Fetch user data from the database
       const fetchUserData = async () => {
         try {
+          console.log("Fetching data for user:", user);
           const userDoc = await getDoc(doc(db, 'users', user.uid)); 
+          console.log("User document:", userDoc);
           if (userDoc.exists()) {
             setUserName(userDoc.data().name);
           } else {
