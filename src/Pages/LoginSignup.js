@@ -40,7 +40,10 @@ function LoginSignup({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={handleSignin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.link} onPress={() => navigation.navigate('Signup')}>
+      <TouchableOpacity style={styles.link} onPress={() => {
+        console.log("Navigating to Signup");
+        navigation.navigate('Signup');
+      }}>
         <Text style={styles.linkText}>Go to Sign Up</Text>
       </TouchableOpacity>
       {error && <Text style={styles.errorText}>{error}</Text>}
