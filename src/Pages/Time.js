@@ -1,4 +1,3 @@
-// src/Pages/Time.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -17,7 +16,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5F5DC', // Beige background for a vintage feel
+    backgroundColor: '#F5F5DC',
     padding: 20,
   },
   title: {

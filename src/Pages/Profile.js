@@ -9,7 +9,6 @@ const Profile = ({ navigation }) => {
 
   useEffect(() => {
     if (user) {
-      // Fetch user data from the database
       const fetchUserData = async () => {
         try {
           console.log("Fetching data for user:", user);

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import HomePage from '../Pages/Homepage';
-import LoginSignup from '../Pages/LoginSignup';
+import HomePage from '../Pages/Home';
+import LoginSignup from '../Pages/Login';
 import LogoutScreen from '../Pages/Logout';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from "react-native";
-import { handleSignup } from "../../server"; // Import the handleSignup function
+import { handleSignup } from "../../server";
+import SharedBackground from '../components/SharedBackground';
 
 function Signup({ navigation }) {
-  const [name, setName] = useState(""); // New state for name
+  const [name, setName] = useState(""); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -15,99 +16,102 @@ function Signup({ navigation }) {
     }
 
     try {
-      await handleSignup(name, email, password); // Pass name to the server function
+      await handleSignup(name, email, password); 
       Alert.alert("Success", "Account created successfully!");
-      navigation.navigate('HomePage'); // Navigate to HomePage after signup
-      setError(null); // Clear any previous errors
+      navigation.navigate('HomePage'); 
+      setError(null); 
     } catch (error) {
       setError("Signup failed. Please try again.");
-      console.error('Error during signup:', error.message); // Additional logging
+      console.error('Error during signup:', error.message); 
     }
   };
 
   return (
-    <View style={styles.container}>
+    <SharedBackground isSignup={true}>
       <Text style={styles.title}>Create an Account</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Name"
-        placeholderTextColor="#a0a0a0"
-        value={name}
-        onChangeText={(text) => setName(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#a0a0a0"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#a0a0a0"
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-        secureTextEntry
-        autoCapitalize="none"
-      />
+      <View style={styles.InputsContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Name"
+          placeholderTextColor="#E5D3B3"
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#E5D3B3"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#E5D3B3"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoCapitalize="none"
+        />
+      </View>
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.backButton}
+        style={styles.link}
         onPress={() => navigation.navigate('LoginSignup')}
       >
-        <Text style={styles.backButtonText}>Back to Login</Text>
+        <Text style={styles.linkText}>Go to Login</Text>
       </TouchableOpacity>
       {error && <Text style={styles.errorText}>{error}</Text>}
-    </View>
+    </SharedBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f5f5dc', // Beige background for consistency
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#4A403A', // Darker vintage color
-    marginBottom: 20,
-    fontFamily: 'serif',
-    textAlign: 'center',
+  InputsContainer: {
+    marginBottom: '10%'
   },
   input: {
-    width: '100%',
+    width: '80%',
     padding: 12,
     marginBottom: 15,
-    borderColor: '#4A403A', // Matching the vintage theme
+    marginLeft: '5%',
+    borderColor: '#4A403A',
     borderWidth: 1,
     borderRadius: 5,
-    backgroundColor: '#fff',
+    backgroundColor: '#5B3A2980',
     fontFamily: 'serif',
   },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#4A403A',
+    marginBottom: '20%',
+    fontFamily: 'serif',
+    marginLeft: '5%',
+  },
   button: {
-    backgroundColor: '#4A403A', // Dark brown for buttons
+    backgroundColor: '#4A403A',
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
-    width: '100%',
+    marginBottom: 10,
+    marginLeft: '5%',
+    width: '80%',
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontFamily: 'serif',
   },
-  backButtonText: {
+  link: {
     marginTop: 15,
-
+  },
+  linkText: {
+    marginLeft: '5%',
     color: '#4A403A',
     fontSize: 16,
     fontFamily: 'serif',

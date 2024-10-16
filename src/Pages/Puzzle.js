@@ -1,55 +1,40 @@
-import React, { useState } from 'react';
-import { View, Image, TouchableOpacity, StyleSheet, Text, Alert } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useEffect } from 'react';
+import { View, Image, StyleSheet, FlatList, Text } from 'react-native';
+import { fetchImages } from '../../server'; // Adjust this import path
 
-const Puzzle = () => {
-  const [imageUri, setImageUri] = useState(null);
+const PuzzlePage = () => {
+  const [images, setImages] = useState([]);
 
-  // Function to pick an image from the gallery
-  const pickImage = async () => {
-    // Request permissions to access the gallery
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission Denied', 'We need permissions to access your gallery.');
-      return;
-    }
+  useEffect(() => {
+    const loadImages = async () => {
+      try {
+        const fetchedImages = await fetchImages();
+        setImages(fetchedImages);
+      } catch (error) {
+        console.error("Failed to load images:", error);
+      }
+    };
 
-    // Open the image picker
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    // Log the result to check the URI
-    console.log("Image Picker Result:", result);
-
-    // If the user didn't cancel the image picker, set the image URI
-    if (!result.canceled) {
-      console.log("Selected Image URI:", result.assets[0].uri); // Log the selected URI
-      setImageUri(result.assets[0].uri); // Update the state with the correct URI
-    } else {
-      console.log("Image selection was cancelled.");
-    }
-  };
+    loadImages();
+  }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      {imageUri ? (
-        <>
-          <Image source={{ uri: imageUri }} style={styles.image} />
-          <TouchableOpacity style={styles.changeButton} onPress={pickImage}>
-            <Text style={styles.buttonText}>Select Another Image</Text>
-          </TouchableOpacity>
-        </>
+    <View style={styles.container}>
+      {images.length > 0 ? (
+        <FlatList
+          data={images}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.imageContainer}>
+              <Image source={{ uri: item.uri }} style={styles.image} />
+              <Text style={styles.imageName}>{item.name}</Text>
+            </View>
+          )}
+        />
       ) : (
-        <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-          <Text style={styles.buttonText}>Select Image</Text>
-        </TouchableOpacity>
+        <Text>No images to display</Text>
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -58,32 +43,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5F5DC',
+    backgroundColor: '#fff',
   },
   image: {
-    width: '100%', // Ensure width is defined
-    height: 300,   // Set a fixed height for testing
-    resizeMode: 'contain',
+    width: 300,
+    height: 300,
+    marginTop: 20,
+    borderRadius: 10,
   },
-  uploadButton: {
-    backgroundColor: '#8B4513',
-    padding: 15,
-    borderRadius: 5,
-    justifyContent: 'center',
+  imageContainer: {
     alignItems: 'center',
+    marginVertical: 10,
   },
-  changeButton: {
-    backgroundColor: '#8B4513',
-    padding: 15,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20, // Add some spacing between the image and the button
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
+  imageName: {
+    marginTop: 5,
+    fontSize: 16,
+    color: '#333',
   },
 });
 
-export default Puzzle;
+export default PuzzlePage;
