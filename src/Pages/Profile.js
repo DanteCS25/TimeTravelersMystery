@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { auth, db } from '../../Firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 
 const Profile = ({ navigation }) => {
   const user = auth.currentUser;
@@ -28,6 +29,16 @@ const Profile = ({ navigation }) => {
     }
   }, [user]);
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      console.log('User logged out');
+      navigation.navigate('LoginSignup'); // Redirect to Login page after logout
+    } catch (error) {
+      console.error('Logout error:', error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>
@@ -35,7 +46,9 @@ const Profile = ({ navigation }) => {
         <>
           <Text style={styles.text}>Name: {userName || "Anonymous"}</Text>
           <Text style={styles.text}>Email: {user.email}</Text>
-          <Button title="Edit Profile" onPress={() => navigation.navigate('EditProfile')} />
+          <TouchableOpacity style={styles.button} onPress={handleLogout}>
+            <Text style={styles.buttonText}>Logout</Text>
+          </TouchableOpacity>
         </>
       ) : (
         <Text style={styles.text}>No user data available. Please log in.</Text>
@@ -65,6 +78,16 @@ const styles = StyleSheet.create({
     fontFamily: 'serif',
     textAlign: 'center',
     marginBottom: 10,
+  },
+  button: {
+    backgroundColor: '#ff4d4d',
+    padding: 15,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 

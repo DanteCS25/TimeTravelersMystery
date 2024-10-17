@@ -3,7 +3,6 @@ import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomePage from '../Pages/Home';
 import LoginSignup from '../Pages/Login';
-import LogoutScreen from '../Pages/Logout';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -69,9 +68,6 @@ const Navbar = () => {
               case 'Time':
                 iconName = focused ? 'clock' : 'clock-outline';
                 break;
-              case 'Logout':
-                iconName = 'logout';
-                break;
               default:
                 iconName = 'help-circle';
                 break;
@@ -104,11 +100,6 @@ const Navbar = () => {
         <Tab.Screen
           name="Time"
           component={Time}
-          options={{ headerShown: false }}
-        />
-        <Tab.Screen
-          name="Logout"
-          component={LogoutScreen}
           options={{ headerShown: false }}
         />
       </Tab.Navigator>

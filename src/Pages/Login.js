@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { View, TextInput, Button, Text, TouchableOpacity, StyleSheet, ImageBackground } from "react-native";
 import { auth } from "../../Firebase";
 import { handleLogin } from "../../server";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../Firebase";
 
 function LoginSignup({ navigation }) {
   const [email, setEmail] = useState("");
@@ -10,8 +12,21 @@ function LoginSignup({ navigation }) {
 
   const handleSignin = async () => {
     try {
-      await handleLogin(email, password);
+      const userCredential = await handleLogin(email, password);
       console.log("User signed in");
+
+      // Fetch user role from Firestore
+      const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        if (userData.role === 'admin') {
+          navigation.navigate('Admin'); // Redirect to Admin page
+        } else {
+          navigation.navigate('HomePage'); // Redirect to Home page for regular users
+        }
+      } else {
+        console.log("No such user document!");
+      }
     } catch (error) {
       setError(error.message);
     }
