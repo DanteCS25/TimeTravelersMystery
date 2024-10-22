@@ -4,12 +4,14 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { auth, db } from '../../Firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import Carousel from '../components/Carousel';
-import PuzzleNr1 from '../../assets/PuzzleNr1.png'; 
-import PuzzleNr2 from '../../assets/PuzzleNr2.png'; 
+import PuzzleNr1 from '../../assets/PuzzleNr1.png';
+import PuzzleNr2 from '../../assets/PuzzleNr2.png';
+import * as Font from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
 const { width } = Dimensions.get('window');
 
-const movies = [
+const users = [
   {
     title: 'Puzzle',
     image: PuzzleNr1,
@@ -32,9 +34,16 @@ const movies = [
   },
 ];
 
+const fetchFonts = () => {
+  return Font.loadAsync({
+    'TimesNewRoman': require('../../assets/TimesNewRoman.ttf'), // Make sure you have this path correct
+  });
+};
+
 const Homepage = ({ navigation }) => {
   const user = auth.currentUser;
   const [userName, setUserName] = useState('');
+  const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -53,13 +62,21 @@ const Homepage = ({ navigation }) => {
     };
 
     fetchUserData();
-  }, [user]);
+  }, [user]); 
+
+  useEffect(() => {
+    fetchFonts().then(() => setFontLoaded(true));
+  }, []);
+
+  if (!fontLoaded) {
+    return <AppLoading />;
+  }
 
   const renderCarouselItem = ({ item }) => (
     <View style={styles.carouselItem}>
-      <Image source={item.image} style={styles.movieImage} />
-      <Text style={styles.movieTitle}>{item.title}</Text>
-      <Text style={styles.movieDescription}>{item.description}</Text>
+      <Image source={item.image} style={styles.userImage} />
+      <Text style={styles.userTitle}>{item.title}</Text>
+      <Text style={styles.userDescription}>{item.description}</Text>
     </View>
   );
 
@@ -72,7 +89,7 @@ const Homepage = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <Carousel
-        data={movies}
+        data={users}
         renderItem={renderCarouselItem}
         autoplay={true}
         autoplayInterval={3000}
@@ -86,8 +103,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#F5F5DC',
-    padding: 30,
+    backgroundColor: '#F0EAD6', // Changed to a more antique shade of off-white
     paddingTop: 50,
   },
   header: {
@@ -99,33 +115,37 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 18,
-    color: '#4A403A',
-    fontFamily: 'serif',
+    color: '#70543E', // Changed to a warm, deep brown
+    fontFamily: 'TimesNewRoman', // Apply Times New Roman here
   },
   carouselItem: {
     width: width * 0.50,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#FFF',
+    backgroundColor: '#FFF8E1', // Creamy white background to soften the visual
     borderRadius: 8,
     marginHorizontal: 10,
+    borderWidth: 2, // Adding a border
+    borderColor: '#CABBA2', // A soft, vintage gold tone for the border
   },
-  movieImage: {
+  userImage: {
     width: '100%',
     height: 150,
     borderRadius: 8,
   },
-  movieTitle: {
+  userTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#4A403A',
     marginTop: 10,
+    fontFamily: 'TimesNewRoman', // Apply Times New Roman here
   },
-  movieDescription: {
+  userDescription: {
     fontSize: 12,
     color: '#6B6B6B',
     marginTop: 5,
+    fontFamily: 'TimesNewRoman', // Apply Times New Roman here
   },
 });
 

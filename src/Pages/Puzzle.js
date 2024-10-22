@@ -6,7 +6,6 @@ const PuzzlePage = () => {
   return (
     <ScrollView>
       <View style={styles.container}>
-        {/* Display the image gallery */}
         <ImageGallery />
       </View>
     </ScrollView>

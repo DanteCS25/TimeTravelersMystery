@@ -13,6 +13,8 @@ import Signup from '../Pages/Signup';
 import Profile from '../Pages/Profile';
 import Puzzle from '../Pages/Puzzle';
 import Time from '../Pages/Time';
+import Admin from '../Pages/Admin'; // Adjust the import path as necessary
+import AdminLogin from '../Pages/AdminLogin'; // Import the new AdminLogin component
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -72,12 +74,12 @@ const Navbar = () => {
                 iconName = 'help-circle';
                 break;
             }
-            return <Icon name={iconName} size={24} color={color} />; 
+            return <Icon name={iconName} size={24} color={color} />;
           },
           tabBarActiveTintColor: '#fff',
-          tabBarInactiveTintColor: '#D2B48C', 
+          tabBarInactiveTintColor: '#D2B48C',
           tabBarStyle: styles.tabBar,
-          tabBarBackground: () => <View style={styles.transparentBackground} />, 
+          tabBarBackground: () => <View style={styles.transparentBackground} />,
           tabBarShowLabel: false,
           headerShown: false,
         })}
@@ -115,9 +117,20 @@ const Navbar = () => {
             component={Navigation}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="Admin"
+            component={Admin}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="LoginSignup">
+          <Stack.Screen
+          name="AdminLogin"
+          component={AdminLogin}
+          options={{ headerShown: false }}
+          />
+
           <Stack.Screen
             name="LoginSignup"
             component={LoginSignup}
@@ -140,7 +153,7 @@ const CustomTabBarButton = ({ children, onPress, accessibilityState }) => {
 
   useEffect(() => {
     Animated.spring(translateYValue, {
-      toValue: focused ? -10 : 0, 
+      toValue: focused ? -10 : 0,
       friction: 3,
       useNativeDriver: true,
     }).start();
@@ -165,7 +178,7 @@ const CustomTabBarButton = ({ children, onPress, accessibilityState }) => {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: 'rgba(95, 75, 50, 0.9)', 
+    backgroundColor: 'rgba(95, 75, 50, 0.9)',
     height: 70,
     borderTopWidth: 0,
     justifyContent: 'center',
@@ -180,7 +193,7 @@ const styles = StyleSheet.create({
   },
   transparentBackground: {
     flex: 1,
-    backgroundColor: 'transparent', 
+    backgroundColor: 'transparent',
   },
   tabButton: {
     justifyContent: 'center',
@@ -188,8 +201,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   focusedIconContainer: {
-    backgroundColor: '#D2B48C', 
-    width: 60, 
+    backgroundColor: '#D2B48C',
+    width: 60,
     height: 60,
     borderRadius: 40,
     justifyContent: 'center',

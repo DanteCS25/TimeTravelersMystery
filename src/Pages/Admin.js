@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Button, Image, StyleSheet, Alert, TextInput } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { uploadImageToFirestore } from '../../server'; // Make sure this function is correctly imported
+import { uploadImage } from '../../server'; // Make sure this function is correctly imported
 
 const Admin = () => {
   const [imageUri, setImageUri] = useState(null);
@@ -31,10 +31,15 @@ const Admin = () => {
       Alert.alert('Error', 'Please enter a custom name for the image.');
       return;
     }
-    await uploadImageToFirestore(imageUri, customName); // Upload image to Firestore
-    Alert.alert('Success', 'Image uploaded and saved to Firestore successfully!');
-    setImageUri(null); // Clear the selected image after upload
-    setCustomName(''); // Clear the custom name input after upload
+    try {
+      await uploadImage(imageUri, customName); // Upload image to Firestore
+      Alert.alert('Success', 'Image uploaded and saved to Firestore successfully!');
+      setImageUri(null); // Clear the selected image after upload
+      setCustomName(''); // Clear the custom name input after upload
+    } catch (error) {
+      Alert.alert('Upload Error', error.message);
+      console.error('Error uploading image:', error);
+    }
   };
 
   return (

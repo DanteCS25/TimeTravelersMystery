@@ -60,7 +60,7 @@ export const uploadImage = async (imageUri, customName) => {
     console.log("File available at", downloadURL);
 
     // Save the image URL to Firestore
-    const docRef = await addDoc(collection(db, "images"), {
+    const docRef = await addDoc(collection(db, "newImages"), {
       name: customName,
       uri: downloadURL,
       createdAt: new Date(),

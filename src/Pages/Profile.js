@@ -1,42 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { auth, db } from '../../Firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
+import * as Font from 'expo-font';
 
 const Profile = ({ navigation }) => {
   const user = auth.currentUser;
-  const [userName, setUserName] = useState('');
+  const [userData, setUserData] = useState({});
 
   useEffect(() => {
-    if (user) {
-      const fetchUserData = async () => {
+    const fetchUserData = async () => {
+      if (user) {
         try {
-          console.log("Fetching data for user:", user);
-          const userDoc = await getDoc(doc(db, 'users', user.uid)); 
-          console.log("User document:", userDoc);
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
-            setUserName(userDoc.data().name);
+            setUserData(userDoc.data());
           } else {
             console.log("No such document!");
           }
         } catch (error) {
           console.error("Error fetching user data: ", error);
         }
-      };
+      }
+    };
 
-      fetchUserData();
-    }
+    fetchUserData();
   }, [user]);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
       console.log('User logged out');
-      navigation.navigate('LoginSignup'); // Redirect to Login page after logout
+      navigation.navigate('LoginSignup');
     } catch (error) {
       console.error('Logout error:', error.message);
     }
+  };
+
+  const handleAdminLogin = () => {
+    navigation.navigate('Admin');
   };
 
   return (
@@ -44,11 +48,17 @@ const Profile = ({ navigation }) => {
       <Text style={styles.title}>Profile</Text>
       {user ? (
         <>
-          <Text style={styles.text}>Name: {userName || "Anonymous"}</Text>
-          <Text style={styles.text}>Email: {user.email}</Text>
-          <TouchableOpacity style={styles.button} onPress={handleLogout}>
+          <Text style={styles.userName}>Name: {userData.name || "Anonymous"}</Text>
+          <Text style={styles.userEmail}>Email: {user.email}</Text>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Icon name="logout" size={24} color="#FFF" style={styles.iconStyle} />
             <Text style={styles.buttonText}>Logout</Text>
           </TouchableOpacity>
+          {user.email === 'admin@gmail.com' && (
+            <TouchableOpacity style={styles.adminButton} onPress={handleAdminLogin}>
+              <Text style={styles.adminButtonText}>Go to Admin Page</Text>
+            </TouchableOpacity>
+          )}
         </>
       ) : (
         <Text style={styles.text}>No user data available. Please log in.</Text>
@@ -60,35 +70,62 @@ const Profile = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5F5DC',
-    padding: 20,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    backgroundColor: '#F0EAD6',
+    padding: 30,
+    paddingTop: 70,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#4A403A',
+    color: '#3e2723',
+    marginBottom: 10,
+    fontFamily: 'Times New Roman',
+  },
+  userName: {
+    fontSize: 18,
+    color: '#3e2723',
+    fontFamily: 'Times New Roman',
+  },
+  userEmail: {
+    fontSize: 16,
+    color: '#3e2723',
+    fontFamily: 'Times New Roman',
     marginBottom: 20,
-    fontFamily: 'serif',
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: '#AC9F93',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFF',
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  iconStyle: {
+    color: '#D8C8B8',
+  },
+  adminButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#AC9F93',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  adminButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontFamily: 'Times New Roman',
   },
   text: {
     fontSize: 16,
-    color: '#333',
-    fontFamily: 'serif',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: '#ff4d4d',
-    padding: 15,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
+    color: '#3e2723',
+    fontFamily: 'Times New Roman',
+  }
 });
 
 export default Profile;
