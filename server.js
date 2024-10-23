@@ -88,3 +88,22 @@ export const fetchImages = async () => {
   }
 };
 
+export const addFavoritePuzzle = async (imageUri, puzzleName) => {
+  try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not logged in');
+
+    // Create a document in the user's collection in Firestore
+    const userPuzzleCollectionRef = collection(db, 'users', user.uid, 'favoritePuzzles');
+    await setDoc(doc(userPuzzleCollectionRef), {
+      name: puzzleName || 'Untitled Puzzle', // Fallback if no name provided
+      imageUri: imageUri,
+      addedAt: new Date(),
+    });
+
+    console.log('Puzzle added to favorites');
+  } catch (error) {
+    console.error('Error adding puzzle to favorites:', error.message);
+    throw error;
+  }
+};

@@ -39,7 +39,7 @@ const ImageGallery = () => {
   }, [searchQuery, images]);
 
   const handleSelectImage = (uri, puzzleId) => {
-    navigation.navigate('PuzzleBuilding', { imageUri: uri, puzzleId });
+    navigation.navigate('ImageDisplay', { imageUri: uri });
   };
 
   return (

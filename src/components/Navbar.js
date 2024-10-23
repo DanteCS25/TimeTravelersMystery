@@ -15,6 +15,7 @@ import Puzzle from '../Pages/Puzzle';
 import Time from '../Pages/Time';
 import Admin from '../Pages/Admin'; // Adjust the import path as necessary
 import AdminLogin from '../Pages/AdminLogin'; // Import the new AdminLogin component
+import ImageDisplay from './PuzzleSolving'; // Import the new ImageDisplay component
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -120,6 +121,11 @@ const Navbar = () => {
           <Stack.Screen
             name="Admin"
             component={Admin}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ImageDisplay"
+            component={ImageDisplay}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
