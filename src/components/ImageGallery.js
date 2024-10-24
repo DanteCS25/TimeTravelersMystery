@@ -71,28 +71,28 @@ const ImageGallery = () => {
 const styles = StyleSheet.create({
   galleryContainer: {
     paddingVertical: 70,
-    backgroundColor: '#f5f5dc', // Light beige background for vintage feel
-    alignItems: 'flex-start', // Align content to the left side
+    backgroundColor: '#F0EAD6',
+    alignItems: 'flex-start',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#3e2723', // Dark brown color for a classic, strong impression
-    textAlign: 'left', // Align text to the left
-    paddingHorizontal: 20, // Add padding for alignment
+    color: '#3e2723',
+    textAlign: 'left',
+    paddingHorizontal: 20,
   },
   slogan: {
     fontSize: 16,
     fontStyle: 'italic',
-    color: '#4b392c', // Complementary dark, muted color
+    color: '#4b392c',
     marginBottom: 20,
     marginTop: 10,
-    textAlign: 'left', // Align text to the left
-    paddingHorizontal: 20, // Add padding for alignment
+    textAlign: 'left',
+    paddingHorizontal: 20,
   },
   searchBar: {
     height: 40,
-    backgroundColor: '#e0d7c3', // Warm, muted color for the input
+    backgroundColor: '#e0d7c3',
     borderRadius: 10,
     padding: 10,
     fontSize: 16,
@@ -100,9 +100,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 10,
     marginBottom: 50,
-    fontStyle: 'italic', // Italic for a more vintage look
+    fontStyle: 'italic',
     borderWidth: 1,
-    borderColor: '#8b7d6b', // Subtle border for a more defined edge
+    borderColor: '#8b7d6b',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -111,35 +111,35 @@ const styles = StyleSheet.create({
   galleryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center', // Center align the images within the row
-    width: '100%', // Full width gallery
+    justifyContent: 'center',
+    width: '100%',
   },
   imageFrame: {
     marginBottom: 20,
     padding: 10,
-    backgroundColor: '#e0d7c3', // Warm, muted color for the frame
+    backgroundColor: '#e0d7c3',
     borderRadius: 10,
     borderWidth: 3,
-    borderColor: '#8b7d6b', // Dark brown border for a vintage touch
+    borderColor: '#8b7d6b',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
-    elevation: 5, // Adds a bit of depth with shadow
-    width: '40%', // Set the width of each frame to 40% of the screen width
-    marginHorizontal: '5%', // Horizontally center the frames within the grid
+    elevation: 5,
+    width: '40%',
+    marginHorizontal: '5%',
   },
   image: {
-    width: '100%',  // Make the image fill the frame
-    height: 150,    // Fixed height for all images
+    width: '100%',
+    height: 150,
     borderRadius: 5,
   },
   imageText: {
     marginTop: 10,
     fontSize: 14,
-    fontStyle: 'italic', // For vintage elegance
+    fontStyle: 'italic',
     textAlign: 'center',
-    color: '#4b392c', // Dark, muted color for the text
+    color: '#4b392c',
   },
   loadingText: {
     textAlign: 'left',
