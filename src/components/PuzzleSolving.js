@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, ImageBackground, StyleSheet, TouchableOpacity, Text, Alert, ScrollView } from 'react-native';
+// PuzzleSolving.js
+import React, { useState, useEffect, useRef } from 'react';
+import { View, ImageBackground, StyleSheet, TouchableOpacity, Text, Alert, ScrollView, Pressable } from 'react-native';
 import SharedBackground from './SharedBackground';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { analyzeImage } from '../services/AI-service';
+import * as FileSystem from 'expo-file-system';
+import ViewShot from 'react-native-view-shot';
 
 const gridSize = 3;
 const puzzleBoardSize = 300;
@@ -13,9 +17,10 @@ const ImageDisplay = () => {
   const navigation = useNavigation();
   const { imageUri } = route.params;
 
-  // State for all pieces and selected piece
   const [pieces, setPieces] = useState([]);
   const [selectedPiece, setSelectedPiece] = useState(null);
+  const [labels, setLabels] = useState([]);
+  const viewShotRef = useRef(null);
 
   useEffect(() => {
     const initPieces = [];
@@ -29,10 +34,9 @@ const ImageDisplay = () => {
         });
       }
     }
-    setPieces(shuffleArray(initPieces)); // Shuffle pieces initially
+    setPieces(shuffleArray(initPieces)); 
   }, []);
 
-  // Fisher-Yates Shuffle Algorithm to shuffle the pieces
   const shuffleArray = (array) => {
     let shuffledArray = [...array];
     for (let i = shuffledArray.length - 1; i > 0; i--) {
@@ -42,22 +46,18 @@ const ImageDisplay = () => {
     return shuffledArray;
   };
 
-  // Handle selecting a piece from the container
   const selectPiece = (piece) => {
-    if (piece.isPlaced) return; // Cannot select a piece that has already been placed
+    if (piece.isPlaced) return; 
     setSelectedPiece(piece);
   };
 
-  // Handle placing a piece on the board
   const placePiece = (blockKey) => {
     if (!selectedPiece) {
       Alert.alert('Select a piece first');
       return;
     }
 
-    // Check if the selected piece's key matches the block's key
     if (selectedPiece.key === blockKey) {
-      // Correct placement
       setPieces((prevPieces) => {
         return prevPieces.map((piece) =>
           piece.key === selectedPiece.key ? { ...piece, isPlaced: true } : piece
@@ -66,6 +66,32 @@ const ImageDisplay = () => {
       setSelectedPiece(null);
     } else {
       Alert.alert('Incorrect Placement', 'This piece does not fit here');
+    }
+  };
+
+  const handleSaveSolvedPuzzle = async () => {
+    try {
+      const uri = await viewShotRef.current.capture();
+      return uri;
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save the solved puzzle');
+      throw error;
+    }
+  };
+
+  const handleAnalysePuzzle = async () => {
+    try {
+      const solvedImageUri = await handleSaveSolvedPuzzle();
+      if (solvedImageUri) {
+        const base64ImageData = await FileSystem.readAsStringAsync(solvedImageUri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        const result = await analyzeImage(base64ImageData);
+        setLabels(result);
+        console.log(result);
+      }
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.error?.message || error.message || 'Failed to analyze the image');
     }
   };
 
@@ -79,45 +105,61 @@ const ImageDisplay = () => {
           <Text style={styles.title}>Start Solving</Text>
         </View>
 
-        {/* Puzzle Board */}
-        <View style={styles.puzzleBoard}>
-          {[...Array(gridSize)].map((_, row) =>
-            [...Array(gridSize)].map((_, col) => {
-              const blockKey = `${row}-${col}`;
-              const piece = pieces.find((p) => p.key === blockKey);
-              return (
-                <TouchableOpacity
-                  key={blockKey}
-                  style={[
-                    styles.puzzlePiece,
-                    {
-                      top: row * pieceSize,
-                      left: col * pieceSize,
-                    },
-                  ]}
-                  onPress={() => placePiece(blockKey)}
-                >
-                  {/* Only render the piece if it is defined and placed */}
-                  {piece && piece.isPlaced && (
-                    <ImageBackground
-                      source={{ uri: imageUri }}
-                      style={styles.imageBackground}
-                      imageStyle={{
-                        width: puzzleBoardSize,
-                        height: puzzleBoardSize,
-                        top: -piece.correctY,
-                        left: -piece.correctX,
-                      }}
-                      resizeMode="cover"
-                    />
-                  )}
-                </TouchableOpacity>
-              );
-            })
+        <Pressable onPress={handleAnalysePuzzle} style={styles.analyzeButton}>
+          <Text style={styles.analyzeButtonText}>Analyze Puzzle</Text>
+        </Pressable>
+
+        <View style={styles.labelContainer}>
+          {labels.length > 0 && (
+            <View>
+              <Text style={styles.labelTitle}>Labels found:</Text>
+              {labels.map((label, index) => (
+                <Text key={index} style={styles.label}>
+                  {label.description}
+                </Text>
+              ))}
+            </View>
           )}
         </View>
 
-        {/* Pieces Container */}
+        <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 0.9 }}>
+          <View style={styles.puzzleBoard}>
+            {[...Array(gridSize)].map((_, row) =>
+              [...Array(gridSize)].map((_, col) => {
+                const blockKey = `${row}-${col}`;
+                const piece = pieces.find((p) => p.key === blockKey);
+                return (
+                  <TouchableOpacity
+                    key={blockKey}
+                    style={[
+                      styles.puzzlePiece,
+                      {
+                        top: row * pieceSize,
+                        left: col * pieceSize,
+                      },
+                    ]}
+                    onPress={() => placePiece(blockKey)}
+                  >
+                    {piece && piece.isPlaced && (
+                      <ImageBackground
+                        source={{ uri: imageUri }}
+                        style={styles.imageBackground}
+                        imageStyle={{
+                          width: puzzleBoardSize,
+                          height: puzzleBoardSize,
+                          top: -piece.correctY,
+                          left: -piece.correctX,
+                        }}
+                        resizeMode="cover"
+                      />
+                    )}
+                  </TouchableOpacity>
+                );
+              })
+            )}
+          </View>
+        </ViewShot>
+
         <View style={styles.pieceContainer}>
           {pieces
             .filter((piece) => !piece.isPlaced)
@@ -215,6 +257,30 @@ const styles = StyleSheet.create({
   image: {
     width: pieceSize,
     height: pieceSize,
+  },
+  analyzeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+  },
+  analyzeButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  labelContainer: {
+    marginVertical: 20,
+    paddingHorizontal: 20,
+  },
+  labelTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#000',
+  },
+  label: {
+    fontSize: 16,
+    color: '#555',
   },
 });
 

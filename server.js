@@ -2,6 +2,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'fire
 import { db, auth } from "./Firebase";
 import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore"; 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; 
+import { API_KEY } from '@env';
 
 const ADMIN_EMAIL = "admin@gmail.com"; // Replace with your admin email
 const ADMIN_PASSWORD = "adminPassword"; // Replace with your admin password
