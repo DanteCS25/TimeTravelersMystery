@@ -1,4 +1,3 @@
-// PuzzleSolving Component
 import React, { useState, useEffect, useRef } from 'react';
 import { View, ImageBackground, StyleSheet, TouchableOpacity, Text, Alert, ScrollView, Pressable, Linking, ActivityIndicator } from 'react-native';
 import SharedBackground from './SharedBackground';
@@ -33,6 +32,9 @@ const PuzzleSolving = () => {
   const [webDetectionData, setWebDetectionData] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const viewShotRef = useRef(null);
+
+  // Add a new state variable to track if the puzzle is complete
+  const [isPuzzleComplete, setIsPuzzleComplete] = useState(false);
 
   useEffect(() => {
     if (level === Level.EASY) {
@@ -87,7 +89,8 @@ const PuzzleSolving = () => {
         // Check if all pieces are placed
         const allPlaced = updatedPieces.every(piece => piece.isPlaced);
         if (allPlaced) {
-          Alert.alert('Success', 'All pieces placed! Press the button to save your puzzle.');
+          Alert.alert('Success', 'All pieces placed! You can now save your puzzle.');
+          setIsPuzzleComplete(true); // Update the state to indicate the puzzle is complete
         }
 
         return updatedPieces;
@@ -95,17 +98,6 @@ const PuzzleSolving = () => {
       setSelectedPiece(null);
     } else {
       Alert.alert('Incorrect Placement', 'This piece does not fit here');
-    }
-  };
-
-  const handleSaveSolvedPuzzle = async () => {
-    try {
-      const uri = await viewShotRef.current.capture();
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Ensure capture is fully complete
-      return uri;
-    } catch (error) {
-      Alert.alert('Error', 'Failed to save the solved puzzle');
-      throw error;
     }
   };
 
@@ -131,9 +123,14 @@ const PuzzleSolving = () => {
   };
 
   const handleAnalysePuzzle = async () => {
+    if (!viewShotRef.current) {
+      Alert.alert('Error', 'Could not capture the puzzle image for analysis');
+      return;
+    }
+
     setIsAnalyzing(true);
     try {
-      const solvedImageUri = await handleSaveSolvedPuzzle();
+      const solvedImageUri = await viewShotRef.current.capture();
       if (solvedImageUri) {
         const base64ImageData = await FileSystem.readAsStringAsync(solvedImageUri, {
           encoding: FileSystem.EncodingType.Base64,
@@ -169,19 +166,11 @@ const PuzzleSolving = () => {
   };
 
   const handleSaveCompletedPuzzle = async () => {
-    const user = auth().currentUser; // Get the current user
-    if (!user) {
-      Alert.alert('Error', 'User not logged in');
-      return;
-    }
     try {
-      const uri = await handleSaveSolvedPuzzle();
-      console.log("Puzzle URI:", uri); // Log the captured URI
-      await saveCompletedPuzzle(user.uid, uri); // Ensure this function is awaited
-      Alert.alert('Success', 'Puzzle completed and saved!');
+      await saveCompletedPuzzle(imageUri, 'My Puzzle'); // Provide a puzzle name
+      Alert.alert('Success', 'Puzzle added to completed puzzles!');
     } catch (error) {
-      Alert.alert('Error', 'Failed to save completed puzzle: ' + error.message);
-      console.error('Error details:', error); // Log the error for debugging
+      Alert.alert('Error', 'Failed to add to completed puzzles');
     }
   };
 
@@ -213,6 +202,20 @@ const PuzzleSolving = () => {
             <Text style={styles.analyzeButtonText}>Analyze Puzzle</Text>
           )}
         </Pressable>
+
+        {webDetectionData && webDetectionData.webEntities && (
+          <View style={styles.webDetectionContainer}>
+            <Text style={styles.labelTitle}>Detected Entities:</Text>
+            {webDetectionData.webEntities.map((entity, index) => (
+              <View key={index} style={styles.entityContainer}>
+                <Text style={styles.label}>{entity.description}</Text>
+                {entity.metadata && entity.metadata.summary && (
+                  <Text style={styles.summary}>{entity.metadata.summary}</Text>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
 
         {/* Puzzle Board */}
         <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 0.9 }}>
@@ -249,7 +252,11 @@ const PuzzleSolving = () => {
           </View>
         </ViewShot>
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveCompletedPuzzle}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={handleSaveCompletedPuzzle}
+          disabled={!isPuzzleComplete} // Disable the button if the puzzle is not complete
+        >
           <Text style={styles.saveButtonText}>Save Completed Puzzle</Text>
         </TouchableOpacity>
 

@@ -18,6 +18,7 @@ import AdminLogin from '../Pages/AdminLogin'; // Import the new AdminLogin compo
 import ImageDisplay from './PuzzleSolving'; // Import the new ImageDisplay component
 import LevelSelection from '../Pages/LevelSelection'; // Import the new LevelSelection component
 import PuzzleSolving from './PuzzleSolving'; // Import the new PuzzleSolving component
+import PuzzleBuilding from '../components/PuzzleBuilding'; // Import the PuzzleBuilding component
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -137,6 +138,11 @@ const Navbar = () => {
             component={PuzzleSolving}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="PuzzleBuilding"
+            component={PuzzleBuilding}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="LoginSignup">
@@ -237,4 +243,3 @@ const styles = StyleSheet.create({
 });
 
 export default Navbar;
-

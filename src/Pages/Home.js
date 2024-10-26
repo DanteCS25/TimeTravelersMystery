@@ -1,36 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Alert, FlatList, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { auth, db } from '../../Firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import Carousel from '../components/Carousel';
-import PuzzleNr1 from '../../assets/PuzzleNr1.png';
-import PuzzleNr2 from '../../assets/PuzzleNr2.png';
 import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading';
+import { getRandomPuzzle, fetchCompletedPuzzles, fetchFavoritePuzzles } from '../../server';
 
 const { width } = Dimensions.get('window');
 
-const users = [
+const difficultyLevels = [
   {
-    title: 'Puzzle',
-    image: PuzzleNr1,
-    description: 'A psychological thriller directed by Todd Phillips.',
+    title: 'Easy',
+    description: 'Perfect for beginners. Fewer pieces to solve, ideal to get started.',
   },
   {
-    title: 'Puzzle',
-    image: PuzzleNr2,
-    description: 'The ultimate superhero movie experience.',
+    title: 'Medium',
+    description: 'A bit of a challenge. More pieces for a balanced experience.',
   },
   {
-    title: 'Puzzle',
-    image: PuzzleNr1,
-    description: 'A psychological thriller directed by Todd Phillips.',
-  },
-  {
-    title: 'Puzzle',
-    image: PuzzleNr2,
-    description: 'The ultimate superhero movie experience.',
+    title: 'Hard',
+    description: 'For puzzle masters. Lots of pieces to keep you engaged!',
   },
 ];
 
@@ -40,13 +31,15 @@ const fetchFonts = () => {
   });
 };
 
-const Homepage = ({ navigation }) => {
-  const user = auth.currentUser;
+const Home = ({ navigation }) => {
   const [userName, setUserName] = useState('');
   const [fontLoaded, setFontLoaded] = useState(false);
+  const [completedPuzzles, setCompletedPuzzles] = useState([]);
+  const [favoritePuzzles, setFavoritePuzzles] = useState([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
+      const user = auth.currentUser;
       if (user) {
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -61,8 +54,20 @@ const Homepage = ({ navigation }) => {
       }
     };
 
+    const fetchPuzzles = async () => {
+      try {
+        const completed = await fetchCompletedPuzzles();
+        const favorites = await fetchFavoritePuzzles();
+        setCompletedPuzzles(completed);
+        setFavoritePuzzles(favorites);
+      } catch (error) {
+        console.error("Error fetching puzzles: ", error);
+      }
+    };
+
     fetchUserData();
-  }, [user]); 
+    fetchPuzzles();
+  }, []);
 
   useEffect(() => {
     fetchFonts().then(() => setFontLoaded(true));
@@ -73,12 +78,18 @@ const Homepage = ({ navigation }) => {
   }
 
   const renderCarouselItem = ({ item }) => (
-    <View style={styles.carouselItem}>
-      <Image source={item.image} style={styles.userImage} />
-      <Text style={styles.userTitle}>{item.title}</Text>
-      <Text style={styles.userDescription}>{item.description}</Text>
-    </View>
+    <TouchableOpacity onPress={() => handleDifficultySelection(item.title)}>
+      <View style={styles.carouselItem}>
+        <Text style={styles.userTitle}>{item.title}</Text>
+        <Text style={styles.userDescription}>{item.description}</Text>
+      </View>
+    </TouchableOpacity>
   );
+
+  const handleDifficultySelection = (level) => {
+    // Logic to handle what happens when a difficulty level is selected
+    console.log(`Selected level: ${level}`);
+  };
 
   return (
     <View style={styles.container}>
@@ -89,10 +100,31 @@ const Homepage = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <Carousel
-        data={users}
+        data={difficultyLevels}
         renderItem={renderCarouselItem}
-        autoplay={true}
-        autoplayInterval={3000}
+        autoplay={false}
+      />
+      <Text style={styles.sectionTitle}>Completed Puzzles</Text>
+      <FlatList
+        data={completedPuzzles}
+        renderItem={({ item }) => (
+          <View style={styles.puzzleItem}>
+            <Image source={{ uri: item.imageUri }} style={styles.puzzleImage} />
+            <Text>{item.name}</Text>
+          </View>
+        )}
+        keyExtractor={(item) => item.id}
+      />
+      <Text style={styles.sectionTitle}>Favorite Puzzles</Text>
+      <FlatList
+        data={favoritePuzzles}
+        renderItem={({ item }) => (
+          <View style={styles.puzzleItem}>
+            <Image source={{ uri: item.imageUri }} style={styles.puzzleImage} />
+            <Text>{item.name}</Text>
+          </View>
+        )}
+        keyExtractor={(item) => item.id}
       />
     </View>
   );
@@ -103,7 +135,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#F0EAD6', // Changed to a more antique shade of off-white
+    backgroundColor: '#F0EAD6',
     paddingTop: 50,
   },
   header: {
@@ -115,38 +147,51 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 18,
-    color: '#70543E', // Changed to a warm, deep brown
-    fontFamily: 'TimesNewRoman', // Apply Times New Roman here
+    color: '#70543E',
+    fontFamily: 'TimesNewRoman',
   },
-  carouselItem: {
-    width: width * 0.50,
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+    color: '#4A403A',
+  },
+  carouselContainer: {
+    width: '100%',
+    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#FFF8E1', // Creamy white background to soften the visual
-    borderRadius: 8,
-    marginHorizontal: 10,
-    borderWidth: 2, // Adding a border
-    borderColor: '#CABBA2', // A soft, vintage gold tone for the border
   },
-  userImage: {
-    width: '100%',
+  carouselItem: {
+    width: width * 0.8,
     height: 150,
-    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    marginHorizontal: 10,
+    padding: 20,
   },
   userTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#4A403A',
-    marginTop: 10,
-    fontFamily: 'TimesNewRoman', // Apply Times New Roman here
+    color: '#333',
   },
   userDescription: {
-    fontSize: 12,
-    color: '#6B6B6B',
-    marginTop: 5,
-    fontFamily: 'TimesNewRoman', // Apply Times New Roman here
+    fontSize: 14,
+    color: '#666',
+  },
+  puzzleImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  puzzleItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
   },
 });
 
-export default Homepage;
+export default Home;

@@ -8,7 +8,6 @@ const LevelSelection = () => {
   const { imageUri } = route.params;
 
   const handleLevelSelection = (selectedLevel) => {
-    // Pass the imageUri along with the selected level
     navigation.navigate('PuzzleSolving', { level: selectedLevel, imageUri: imageUri });
   };
 

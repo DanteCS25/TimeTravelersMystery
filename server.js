@@ -110,17 +110,76 @@ export const addFavoritePuzzle = async (imageUri, puzzleName) => {
   }
 };
 
-export const saveCompletedPuzzle = async (userId, imageUri) => {
+export const saveCompletedPuzzle = async (imageUri, puzzleName) => {
   try {
-    const docRef = await addDoc(collection(db, 'PuzzlesSolved'), {
-      userId: userId,
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not logged in');
+
+    // Create a document in the user's collection in Firestore
+    const userPuzzleCollectionRef = collection(db, 'users', user.uid, 'completedPuzzles');
+    await addDoc(userPuzzleCollectionRef, {
+      name: puzzleName || 'Untitled Puzzle', // Fallback if no name provided
       imageUri: imageUri,
-      solvedAt: new Date(),
+      addedAt: new Date(),
     });
-    console.log("Completed puzzle saved with ID: ", docRef.id);
+
+    console.log('Puzzle added to complete Puzzle');
   } catch (error) {
-    console.error("Error saving completed puzzle: ", error.message);
-    throw new Error('Failed to save completed puzzle'); // Ensure this error is thrown
+    console.error('Error adding puzzle to complete Puzzle:', error.message);
+    throw error;
   }
 };
 
+export const getRandomPuzzle = async () => {
+  try {
+    const puzzlesCollectionRef = collection(db, 'puzzles');
+    const puzzleSnapshot = await getDocs(puzzlesCollectionRef);
+    const puzzles = puzzleSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    if (puzzles.length === 0) {
+      throw new Error('No puzzles available');
+    }
+
+    const randomIndex = Math.floor(Math.random() * puzzles.length);
+    return puzzles[randomIndex];
+  } catch (error) {
+    console.error('Error fetching puzzles:', error);
+    throw error;
+  }
+};
+
+export const fetchCompletedPuzzles = async () => {
+  try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not logged in');
+
+    const completedPuzzlesRef = collection(db, 'users', user.uid, 'completedPuzzles');
+    const querySnapshot = await getDocs(completedPuzzlesRef);
+    const completedPuzzles = [];
+    querySnapshot.forEach((doc) => {
+      completedPuzzles.push({ id: doc.id, ...doc.data() });
+    });
+    return completedPuzzles;
+  } catch (error) {
+    console.error("Error fetching completed puzzles: ", error);
+    throw error;
+  }
+};
+
+export const fetchFavoritePuzzles = async () => {
+  try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not logged in');
+
+    const favoritePuzzlesRef = collection(db, 'users', user.uid, 'favoritePuzzles');
+    const querySnapshot = await getDocs(favoritePuzzlesRef);
+    const favoritePuzzles = [];
+    querySnapshot.forEach((doc) => {
+      favoritePuzzles.push({ id: doc.id, ...doc.data() });
+    });
+    return favoritePuzzles;
+  } catch (error) {
+    console.error("Error fetching favorite puzzles: ", error);
+    throw error;
+  }
+};
