@@ -13,22 +13,22 @@ function LoginSignup({ navigation }) {
   const handleSignin = async () => {
     try {
       const userCredential = await handleLogin(email, password);
-      console.log("User signed in");
-
-      // Fetch user role from Firestore
+      console.log("User signed in:", userCredential.user.email);
+      // Additional logic to navigate based on user role
       const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
       if (userDoc.exists()) {
         const userData = userDoc.data();
         if (userData.role === 'admin') {
-          navigation.navigate('Admin'); // Redirect to Admin page
+          navigation.navigate('Admin');
         } else {
-          navigation.navigate('HomePage'); // Redirect to Home page for regular users
+          navigation.navigate('HomePage');
         }
       } else {
         console.log("No such user document!");
       }
     } catch (error) {
       setError(error.message);
+      console.error("Login error:", error);
     }
   };
 

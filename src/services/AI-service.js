@@ -15,7 +15,7 @@ export const analyzeImage = async (base64ImageData) => {
           image: {
             content: base64ImageData,
           },
-          features: [{ type: 'LABEL_DETECTION', maxResults: 5 }],
+          features: [{ type: 'WEB_DETECTION', maxResults: 5 }],
         },
       ],
     };
@@ -26,11 +26,20 @@ export const analyzeImage = async (base64ImageData) => {
       },
     });
 
-    // Checking if labelAnnotations exist before accessing
-    if (apiResponse.data.responses[0] && apiResponse.data.responses[0].labelAnnotations) {
-      return apiResponse.data.responses[0].labelAnnotations;
+    // Checking if webDetection exist before accessing
+    if (apiResponse.data.responses[0] && apiResponse.data.responses[0].webDetection) {
+      const webDetection = apiResponse.data.responses[0].webDetection;
+      const formattedWebDetection = {
+        webEntities: webDetection.webEntities?.map(entity => ({
+          description: entity.description,
+          score: entity.score,
+        })) || [],
+        fullMatchingImages: webDetection.fullMatchingImages?.map(image => image.url) || [],
+        partialMatchingImages: webDetection.partialMatchingImages?.map(image => image.url) || [],
+      };
+      return formattedWebDetection;
     } else {
-      throw new Error('No labels found in the image');
+      throw new Error('No web-related information found in the image');
     }
   } catch (error) {
     console.log('Error analyzing image: ', error.response ? error.response.data : error.message);

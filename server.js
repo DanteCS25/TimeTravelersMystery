@@ -1,3 +1,4 @@
+// Server.js Component
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { db, auth } from "./Firebase";
 import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore"; 
@@ -96,7 +97,7 @@ export const addFavoritePuzzle = async (imageUri, puzzleName) => {
 
     // Create a document in the user's collection in Firestore
     const userPuzzleCollectionRef = collection(db, 'users', user.uid, 'favoritePuzzles');
-    await setDoc(doc(userPuzzleCollectionRef), {
+    await addDoc(userPuzzleCollectionRef, {
       name: puzzleName || 'Untitled Puzzle', // Fallback if no name provided
       imageUri: imageUri,
       addedAt: new Date(),
@@ -108,3 +109,18 @@ export const addFavoritePuzzle = async (imageUri, puzzleName) => {
     throw error;
   }
 };
+
+export const saveCompletedPuzzle = async (userId, imageUri) => {
+  try {
+    const docRef = await addDoc(collection(db, 'PuzzlesSolved'), {
+      userId: userId,
+      imageUri: imageUri,
+      solvedAt: new Date(),
+    });
+    console.log("Completed puzzle saved with ID: ", docRef.id);
+  } catch (error) {
+    console.error("Error saving completed puzzle: ", error.message);
+    throw new Error('Failed to save completed puzzle'); // Ensure this error is thrown
+  }
+};
+

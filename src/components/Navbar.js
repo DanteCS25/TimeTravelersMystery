@@ -16,6 +16,8 @@ import Time from '../Pages/Time';
 import Admin from '../Pages/Admin'; // Adjust the import path as necessary
 import AdminLogin from '../Pages/AdminLogin'; // Import the new AdminLogin component
 import ImageDisplay from './PuzzleSolving'; // Import the new ImageDisplay component
+import LevelSelection from '../Pages/LevelSelection'; // Import the new LevelSelection component
+import PuzzleSolving from './PuzzleSolving'; // Import the new PuzzleSolving component
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -33,9 +35,6 @@ const Navbar = () => {
         setLoggedIn(false);
       }
     });
-
-    testFirestoreConnection();
-
     return unsubscribe;
   }, []);
 
@@ -126,6 +125,16 @@ const Navbar = () => {
           <Stack.Screen
             name="ImageDisplay"
             component={ImageDisplay}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="LevelSelection"
+            component={LevelSelection}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="PuzzleSolving"
+            component={PuzzleSolving}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
@@ -228,3 +237,4 @@ const styles = StyleSheet.create({
 });
 
 export default Navbar;
+

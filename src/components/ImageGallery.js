@@ -1,3 +1,4 @@
+// ImageGallery.js
 import React, { useEffect, useState } from 'react';
 import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -38,8 +39,9 @@ const ImageGallery = () => {
     }
   }, [searchQuery, images]);
 
-  const handleSelectImage = (uri, puzzleId) => {
-    navigation.navigate('ImageDisplay', { imageUri: uri });
+  const handleSelectImage = (uri) => {
+    console.log("Navigating to LevelSelection with URI:", uri);
+    navigation.navigate('LevelSelection', { imageUri: uri });
   };
 
   return (
@@ -54,7 +56,7 @@ const ImageGallery = () => {
       />
       <View style={styles.galleryGrid}>
         {filteredImages.map((image) => (
-          <TouchableOpacity key={image.id} style={styles.imageFrame} onPress={() => handleSelectImage(image.uri, image.id)}>
+          <TouchableOpacity key={image.id} style={styles.imageFrame} onPress={() => handleSelectImage(image.uri)}>
             <Image
               source={{ uri: image.uri }}
               style={styles.image}
