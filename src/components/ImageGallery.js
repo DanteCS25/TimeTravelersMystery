@@ -1,6 +1,6 @@
 // ImageGallery.js
 import React, { useEffect, useState } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { fetchImages } from '../../server';
 
@@ -45,35 +45,43 @@ const ImageGallery = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.galleryContainer}>
-      <Text style={styles.title}>Timeless Gallery</Text>
-      <Text style={styles.slogan}>Explore the echoes of history, one piece at a time</Text>
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search images..."
-        value={searchQuery}
-        onChangeText={text => setSearchQuery(text)}
-      />
-      <View style={styles.galleryGrid}>
-        {filteredImages.map((image) => (
-          <TouchableOpacity key={image.id} style={styles.imageFrame} onPress={() => handleSelectImage(image.uri)}>
-            <Image
-              source={{ uri: image.uri }}
-              style={styles.image}
-              onError={(e) => console.error("Error loading image:", e.nativeEvent.error)}
-            />
-            <Text style={styles.imageText}>{image.name}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+    <ImageBackground
+      source={require('../../assets/Paper2.jpg')} 
+      style={styles.backgroundImage}
+    >
+      <ScrollView contentContainerStyle={styles.galleryContainer}>
+        <Text style={styles.title}>Timeless Gallery</Text>
+        <Text style={styles.slogan}>Explore the echoes of history, one piece at a time</Text>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search images..."
+          value={searchQuery}
+          onChangeText={text => setSearchQuery(text)}
+        />
+        <View style={styles.galleryGrid}>
+          {filteredImages.map((image) => (
+            <TouchableOpacity key={image.id} style={styles.imageFrame} onPress={() => handleSelectImage(image.uri)}>
+              <Image
+                source={{ uri: image.uri }}
+                style={styles.image}
+                onError={(e) => console.error("Error loading image:", e.nativeEvent.error)}
+              />
+              <Text style={styles.imageText}>{image.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   galleryContainer: {
     paddingVertical: 70,
-    backgroundColor: '#F0EAD6',
     alignItems: 'flex-start',
   },
   title: {
@@ -94,7 +102,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     height: 40,
-    backgroundColor: '#e0d7c3',
+    backgroundColor: '#FFF8E1',
     borderRadius: 10,
     padding: 10,
     fontSize: 16,
@@ -119,7 +127,7 @@ const styles = StyleSheet.create({
   imageFrame: {
     marginBottom: 20,
     padding: 10,
-    backgroundColor: '#e0d7c3',
+    backgroundColor: '#FFF8E1',
     borderRadius: 10,
     borderWidth: 3,
     borderColor: '#8b7d6b',
@@ -143,13 +151,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#4b392c',
   },
-  loadingText: {
-    textAlign: 'left',
-    marginTop: 20,
-    fontSize: 18,
-    color: '#999',
-    paddingHorizontal: 20,
-  }
 });
 
 export default ImageGallery;

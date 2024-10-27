@@ -32,6 +32,7 @@ const PuzzleSolving = () => {
   const [webDetectionData, setWebDetectionData] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const viewShotRef = useRef(null);
+  const [isFavorite, setIsFavorite] = useState(false); // New state variable for favorite
 
   // Add a new state variable to track if the puzzle is complete
   const [isPuzzleComplete, setIsPuzzleComplete] = useState(false);
@@ -44,7 +45,7 @@ const PuzzleSolving = () => {
     } else if (level === Level.HARD) {
       gridSize = 5;
     }
-    pieceSize = puzzleBoardSize / gridSize;
+    pieceSize = Math.round(puzzleBoardSize / gridSize);
 
     const initPieces = [];
     for (let row = 0; row < gridSize; row++) {
@@ -158,8 +159,13 @@ const PuzzleSolving = () => {
 
   const handleAddFavorite = async () => {
     try {
-      await addFavoritePuzzle(imageUri, 'My Puzzle'); // Provide a puzzle name
-      Alert.alert('Success', 'Puzzle added to favorites!');
+      if (isFavorite) {
+        Alert.alert('Already in Favorites', 'This puzzle is already in your favorites.');
+      } else {
+        await addFavoritePuzzle(imageUri, 'My Puzzle'); // Provide a puzzle name
+        setIsFavorite(true);
+        Alert.alert('Success', 'Puzzle added to favorites!');
+      }
     } catch (error) {
       Alert.alert('Error', 'Failed to add to favorites');
     }
@@ -175,7 +181,7 @@ const PuzzleSolving = () => {
   };
 
   return (
-    <SharedBackground>
+    <ImageBackground source={require('../../assets/Paper2.jpg')} style={styles.backgroundImage}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -183,7 +189,7 @@ const PuzzleSolving = () => {
           </TouchableOpacity>
           <Text style={styles.title}>Start Solving</Text>
           <TouchableOpacity onPress={handleAddFavorite}>
-            <Icon name="heart" size={30} color="#FF6347" />
+            <Icon name={isFavorite ? "heart" : "heart-outline"} size={30} color={"#C0A080"} />
           </TouchableOpacity>
         </View>
 
@@ -239,8 +245,8 @@ const PuzzleSolving = () => {
                     source={{ uri: imageUri }}
                     style={styles.imageBackground}
                     imageStyle={{
-                      width: puzzleBoardSize,
-                      height: puzzleBoardSize,
+                      width: pieceSize * gridSize,
+                      height: pieceSize * gridSize,
                       top: -piece.correctY,
                       left: -piece.correctX,
                     }}
@@ -280,8 +286,8 @@ const PuzzleSolving = () => {
                   source={{ uri: imageUri }}
                   style={styles.image}
                   imageStyle={{
-                    width: puzzleBoardSize,
-                    height: puzzleBoardSize,
+                    width: pieceSize * gridSize,
+                    height: pieceSize * gridSize,
                     top: -piece.correctY,
                     left: -piece.correctX,
                   }}
@@ -291,16 +297,20 @@ const PuzzleSolving = () => {
             ))}
         </View>
       </ScrollView>
-    </SharedBackground>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F5F5DC',
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',
@@ -319,7 +329,6 @@ const styles = StyleSheet.create({
   instructionsContainer: {
     marginTop: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#FFF8DC',
     borderRadius: 5,
     paddingVertical: 10,
   },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 const LevelSelection = () => {
@@ -12,65 +12,69 @@ const LevelSelection = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Select Difficulty Level</Text>
-      
-      <View style={styles.levelContainer}>
-        <Text style={styles.levelTitle}>Easy</Text>
-        <Text style={styles.description}>Perfect for beginners. Fewer pieces to solve, ideal to get started.</Text>
-        <TouchableOpacity style={styles.startButton} onPress={() => handleLevelSelection('easy')}>
-          <Text style={styles.buttonText}>Start</Text>
-        </TouchableOpacity>
-      </View>
+    <ImageBackground source={require('../../assets/Paper2.jpg')} style={styles.backgroundImage}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Select Difficulty Level</Text>
+        
+        <View style={styles.levelContainerLeftAligned}>
+          <Text style={styles.levelTitle}>Easy</Text>
+          <Text style={styles.description}>Perfect for beginners. Fewer pieces to solve, ideal to get started.</Text>
+          <TouchableOpacity style={styles.startButton} onPress={() => handleLevelSelection('easy')}>
+            <Text style={styles.buttonText}>Start</Text>
+          </TouchableOpacity>
+          <View style={styles.separator} />
+        </View>
 
-      <View style={styles.levelContainer}>
-        <Text style={styles.levelTitle}>Medium</Text>
-        <Text style={styles.description}>A bit of a challenge. More pieces for a balanced experience.</Text>
-        <TouchableOpacity style={styles.startButton} onPress={() => handleLevelSelection('medium')}>
-          <Text style={styles.buttonText}>Start</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.levelContainerLeftAligned}>
+          <Text style={styles.levelTitle}>Medium</Text>
+          <Text style={styles.description}>A bit of a challenge. More pieces for a balanced experience.</Text>
+          <TouchableOpacity style={styles.startButton} onPress={() => handleLevelSelection('medium')}>
+            <Text style={styles.buttonText}>Start</Text>
+          </TouchableOpacity>
+          <View style={styles.separator} />
+        </View>
 
-      <View style={styles.levelContainer}>
-        <Text style={styles.levelTitle}>Hard</Text>
-        <Text style={styles.description}>For puzzle masters. Lots of pieces to keep you engaged!</Text>
-        <TouchableOpacity style={styles.startButton} onPress={() => handleLevelSelection('hard')}>
-          <Text style={styles.buttonText}>Start</Text>
-        </TouchableOpacity>
+        <View style={styles.levelContainerLeftAligned}>
+          <Text style={styles.levelTitle}>Hard</Text>
+          <Text style={styles.description}>For puzzle masters. Lots of pieces to keep you engaged!</Text>
+          <TouchableOpacity style={styles.startButton} onPress={() => handleLevelSelection('hard')}>
+            <Text style={styles.buttonText}>Start</Text>
+          </TouchableOpacity>
+          <View style={styles.separator} />
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FAF0E6', // Vintage parchment-like background color
-    padding: 20,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    backgroundColor: 'transparent', // Make background transparent to show the background image
+    padding: 10,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 30,
     color: '#4B2E39', // Darker, vintage-inspired color
     fontFamily: 'serif', // Give a vintage typeface look
+    textAlign: 'left',
+    marginLeft: 30,
+    marginTop: '25%',
   },
-  levelContainer: {
+  levelContainerLeftAligned: {
     marginBottom: 20,
-    padding: 15,
-    borderWidth: 1,
-    borderColor: '#8B4513', // Brown color for a vintage feel
-    borderRadius: 10,
-    backgroundColor: '#FFF8DC', // Antique white background
     width: '90%',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3, // Adds a subtle shadow for depth
+    alignItems: 'flex-start',
+    padding: 10,
+    marginLeft: 10,
   },
   levelTitle: {
     fontSize: 22,
@@ -78,10 +82,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#4B2E39', // Darker, vintage-inspired color
     fontFamily: 'serif',
+    marginLeft: 15,
   },
   description: {
     fontSize: 16,
-    textAlign: 'center',
+    marginLeft: 15,
     marginBottom: 15,
     color: '#6B4226', // Warm, vintage brown color
     fontFamily: 'serif',
@@ -91,12 +96,20 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    marginLeft: 10,
   },
   buttonText: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'serif',
+  },
+  separator: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#8B4513',
+    marginVertical: 20,
+    marginLeft: 10,
   },
 });
 
