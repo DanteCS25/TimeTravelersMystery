@@ -6,7 +6,6 @@ import { doc, getDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import Carousel from 'react-native-snap-carousel';
 import * as Font from 'expo-font';
-import AppLoading from 'expo-app-loading';
 import { fetchCompletedPuzzles, fetchFavoritePuzzles } from '../../server';
 import { Dimensions } from 'react-native';
 

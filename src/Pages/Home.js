@@ -5,7 +5,6 @@ import { auth, db } from '../../Firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import Carousel from 'react-native-snap-carousel';
 import * as Font from 'expo-font';
-import AppLoading from 'expo-app-loading';
 import { fetchCompletedPuzzles, fetchFavoritePuzzles } from '../../server';
 
 const { width } = Dimensions.get('window');

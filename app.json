@@ -4,7 +4,7 @@
     "slug": "TimeTravelersMystery",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "assets/Logo.webp",
+    "icon": "assets/Logo1.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "assets/Logo.png",
@@ -27,13 +27,19 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.dantecs25.TimeTravelersMystery"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f50fdeed-1601-4a8c-ab3f-2726164ee36b"
+      }
+    }
   }
 }
