@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert, ImageBackground, SafeAreaView } from "react-native";
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from "react-native";
 import { handleSignup } from "../../server";
 import SharedBackground from '../components/SharedBackground';
 
@@ -27,64 +27,52 @@ function Signup({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ImageBackground source={require('../../assets/SignBackground.png')} style={styles.backgroundImage}>
-        <SharedBackground isSignup={true}>
-          <Text style={styles.title}>Create an Account</Text>
-          <View style={styles.InputsContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Name"
-              placeholderTextColor="#E5D3B3"
-              value={name}
-              onChangeText={setName}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="#E5D3B3"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor="#E5D3B3"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-            />
-          </View>
-          <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.link}
-            onPress={() => navigation.navigate('LoginSignup')}
-          >
-            <Text style={styles.linkText}>Go to Login</Text>
-          </TouchableOpacity>
-          {error && <Text style={styles.errorText}>{error}</Text>}
-        </SharedBackground>
-      </ImageBackground>
-    </SafeAreaView>
+    <SharedBackground isSignup={true}>
+      <Text style={styles.title}>Create an Account</Text>
+      <View style={styles.InputsContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Name"
+          placeholderTextColor="#E5D3B3"
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#E5D3B3"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#E5D3B3"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoCapitalize="none"
+        />
+      </View>
+      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.link}
+        onPress={() => navigation.navigate('LoginSignup')}
+      >
+        <Text style={styles.linkText}>Go to Login</Text>
+      </TouchableOpacity>
+      {error && <Text style={styles.errorText}>{error}</Text>}
+    </SharedBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover',
-    padding: 20,
-  },
   InputsContainer: {
-    marginBottom: '10%',
+    marginBottom: '10%'
   },
   input: {
     width: '80%',

@@ -199,12 +199,14 @@ const CustomTabBarButton = ({ children, onPress, accessibilityState }) => {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: 'rgba(95, 75, 50, 1)',
+    backgroundColor: 'rgba(95, 75, 50, 0.9)',
     height: 70,
     borderTopWidth: 0,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.3,

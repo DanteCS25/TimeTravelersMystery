@@ -1,29 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 const Time = () => {
   return (
-    <ImageBackground source={require('../../assets/Paper2.jpg')} style={styles.backgroundImage}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Time Events</Text>
-        <Text style={styles.text}>Explore different time events and historical mysteries...</Text>
-        <Text style={styles.text}>COMING SOON</Text>
-        {/* Add your content here */}
-      </View>
-    </ImageBackground>
+    <View style={styles.container}>
+      <Text style={styles.title}>Time Events</Text>
+      <Text style={styles.text}>Explore different time events and historical mysteries...</Text>
+      {/* Add your content here */}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover',
-  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: '#F5F5DC',
     padding: 20,
   },
   title: {
@@ -38,7 +31,6 @@ const styles = StyleSheet.create({
     color: '#333',
     fontFamily: 'serif',
     textAlign: 'center',
-    marginBottom: 20,
   },
 });
 
