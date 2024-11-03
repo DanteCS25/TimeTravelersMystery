@@ -30,7 +30,7 @@
     "expo-image-picker": "~15.0.7",
     "expo-splash-screen": "~0.27.6",
     "expo-status-bar": "~1.12.1",
-    "firebase": "^11.0.1",
+    "firebase": "^10.14.0",
     "metro": "^0.80.12",
     "prop-types": "^15.8.1",
     "react": "18.2.0",

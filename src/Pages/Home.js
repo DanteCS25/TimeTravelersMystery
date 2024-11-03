@@ -6,7 +6,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import Carousel from '../components/Carousel';
 import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading';
-import { fetchCompletedPuzzles, fetchFavoritePuzzles } from '../../server';
+import { getRandomPuzzle, fetchCompletedPuzzles, fetchFavoritePuzzles } from '../../server';
 
 const { width } = Dimensions.get('window');
 

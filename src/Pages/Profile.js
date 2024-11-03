@@ -5,17 +5,6 @@ import { auth, db } from '../../Firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import * as Font from 'expo-font';
-import AppLoading from 'expo-app-loading';
-import { fetchCompletedPuzzles, fetchFavoritePuzzles } from '../../server';
-import { Dimensions } from 'react-native';
-
-const { width } = Dimensions.get('window');
-
-const fetchFonts = () => {
-  return Font.loadAsync({
-    'TimesNewRoman': require('../../assets/TimesNewRoman.ttf'), // Make sure you have this path correct
-  });
-};
 
 const Profile = ({ navigation }) => {
   const user = auth.currentUser;
