@@ -16,7 +16,8 @@
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to upload images.",
         "NSCameraUsageDescription": "This app needs access to your camera to take photos."
-      }
+      },
+      "bundleIdentifier": "com.dantecs25.TimeTravelersMystery"
     },
     "android": {
       "permissions": [
@@ -34,7 +35,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-build-properties"
     ],
     "extra": {
       "eas": {
