@@ -42,6 +42,13 @@
       "eas": {
         "projectId": "f50fdeed-1601-4a8c-ab3f-2726164ee36b"
       }
+    },
+    "owner": "dante-cs25",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f50fdeed-1601-4a8c-ab3f-2726164ee36b"
     }
   }
 }
